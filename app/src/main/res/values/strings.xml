@@ -1,14 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">磁贴指南针</string>
-    <string name="compass">指南针</string>
-    <string name="ok">确定</string>
-    <string name="N">北</string>
-    <string name="E">东</string>
-    <string name="S">南</string>
-    <string name="W">西</string>
-    <string name="EN">东北</string>
-    <string name="WN">西北</string>
-    <string name="ES">东南</string>
-    <string name="WS">西南</string>
-    <string name="message">一个存在于下拉通知栏磁贴里的指南针，并谨以此微小功能的复刻致敬CyanogenMod。\nhttps://github.com/singleNeuron\n感谢卖动与HEART绘制图标，HEART和Gospodaru在我写到一半的时候拽着我去吃鸡。\n神经元 Copyright © 2020 GNU Lesser General Public License v3.0</string>
+    <string name="app_name">Tile Compass</string>
+    <string name="E">East</string>
+    <string name="EN">Northeast</string>
+    <string name="ES">Southeast</string>
+    <string name="N">North</string>
+    <string name="S">South</string>
+    <string name="W">West</string>
+    <string name="WN">Northwest</string>
+    <string name="WS">Southwest</string>
+    <string name="compass">Compass</string>
+    <string name="message">A compass in Quick Setting and a little tribute to CyanogenMod with this tiny function copy.\nhttps://github.com/singleNeuron\n\nThanks HEART &amp; Lagrio for drawing the icon, HEART &amp; Gospodaru dragged me to play PUGA halfway through my developing.\n\nsingleNeuron Copyright © 2020 GNU Lesser General Public License v3.0</string>
+    <string name="ok">OK</string>
 </resources>

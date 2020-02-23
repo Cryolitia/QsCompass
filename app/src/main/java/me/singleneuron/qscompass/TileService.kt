@@ -1,16 +1,16 @@
 package me.singleneuron.qscompass
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.Icon
 import android.hardware.*
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
-import androidx.core.content.getSystemService
+import androidx.appcompat.app.AppCompatActivity
 
 class CompassTileService : TileService() {
 
@@ -19,9 +19,10 @@ class CompassTileService : TileService() {
     private lateinit var mSensor : Sensor
     private var accelerometerValues = FloatArray(3)
     private var magneticFieldValues = FloatArray(3)
+    private lateinit var activity : AppCompatActivity
 
     //https://blog.csdn.net/octobershiner/article/details/6641942
-    val myListener : SensorEventListener = object : SensorEventListener {
+    private val myListener : SensorEventListener = object : SensorEventListener {
 
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         }
@@ -45,6 +46,10 @@ class CompassTileService : TileService() {
         Log.d("statue","OnClick")
         if (qsTile.state!=Tile.STATE_ACTIVE) {
             qsTile.state = Tile.STATE_ACTIVE
+            val intent = Intent(this,BackgroundActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            startActivity(intent)
             sensorManager.registerListener(myListener,aSensor,SensorManager.SENSOR_DELAY_NORMAL)
             sensorManager.registerListener(myListener,mSensor,SensorManager.SENSOR_DELAY_NORMAL)
         }
@@ -104,8 +109,20 @@ class CompassTileService : TileService() {
         Log.d("statue","OnStopListening")
         qsTile.state = Tile.STATE_INACTIVE
         qsTile.label = getString(R.string.compass)
+
+        val bitmap = BitmapFactory.decodeResource(this.resources,R.drawable.navigation)
+        val bmResult = Bitmap.createBitmap(bitmap.width,bitmap.height,Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bmResult)
+        canvas.drawBitmap(bitmap,0.0.toFloat(),0.0.toFloat(),null)
+        qsTile.icon = Icon.createWithBitmap(bmResult)
+
         qsTile.updateTile()
         //sensorManager.unregisterListener(myListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sensorManager.unregisterListener(myListener)
     }
 
 }

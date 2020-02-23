@@ -33,6 +33,9 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES"/>
             </intent-filter>
         </activity>
+        <activity android:name=".BackgroundActivity"
+            android:excludeFromRecents="true">
+        </activity>
     </application>
 
 </manifest>
