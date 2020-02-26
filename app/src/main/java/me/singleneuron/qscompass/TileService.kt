@@ -12,34 +12,13 @@ import android.service.quicksettings.TileService
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
-class CompassTileService : TileService() {
+class CompassTileService : TileService(), SensorEventListener {
 
     private lateinit var sensorManager : SensorManager
     private lateinit var aSensor : Sensor
     private lateinit var mSensor : Sensor
     private var accelerometerValues = FloatArray(3)
     private var magneticFieldValues = FloatArray(3)
-    private lateinit var activity : AppCompatActivity
-
-    //https://blog.csdn.net/octobershiner/article/details/6641942
-    private val myListener : SensorEventListener = object : SensorEventListener {
-
-        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        }
-
-        override fun onSensorChanged(event: SensorEvent?) {
-            if (event!=null&&event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
-                magneticFieldValues = event.values
-                //Log.d("sensorUpdate:MAGNETIC",magneticFieldValues.joinToString())
-            }
-            if (event!=null&&event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                accelerometerValues = event.values
-                //Log.d("sensorUpdate:ACCELEROMETER",accelerometerValues.joinToString())
-            }
-            calculateOrientation()
-        }
-
-    }
 
     override fun onClick() {
         super.onClick()
@@ -50,13 +29,18 @@ class CompassTileService : TileService() {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
             startActivity(intent)
-            sensorManager.registerListener(myListener,aSensor,SensorManager.SENSOR_DELAY_NORMAL)
-            sensorManager.registerListener(myListener,mSensor,SensorManager.SENSOR_DELAY_NORMAL)
+            if (!this::sensorManager.isInitialized) {
+                sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+                aSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+                mSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+            }
+            sensorManager.registerListener(this,aSensor,SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL)
         }
         else {
             qsTile.state =  Tile.STATE_INACTIVE
             qsTile.label = this.getString(R.string.compass)
-            sensorManager.unregisterListener(myListener)
+            sensorManager.unregisterListener(this)
         }
         qsTile.updateTile()
     }
@@ -122,7 +106,22 @@ class CompassTileService : TileService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        sensorManager.unregisterListener(myListener)
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event!=null&&event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            magneticFieldValues = event.values
+            //Log.d("sensorUpdate:MAGNETIC",magneticFieldValues.joinToString())
+        }
+        if (event!=null&&event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            accelerometerValues = event.values
+            //Log.d("sensorUpdate:ACCELEROMETER",accelerometerValues.joinToString())
+        }
+        calculateOrientation()
     }
 
 }
