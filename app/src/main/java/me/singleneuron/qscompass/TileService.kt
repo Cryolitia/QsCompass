@@ -19,6 +19,10 @@ class CompassTileService : TileService(), SensorEventListener {
     private lateinit var mSensor : Sensor
     private var accelerometerValues = FloatArray(3)
     private var magneticFieldValues = FloatArray(3)
+    private var lastSensorValue : BooleanArray = BooleanArray(2)
+    private var radianFloat : Float = 0F
+    private var degreeFloat : Float = 0F
+    private var lastDegree : Int = 0
 
     override fun onClick() {
         super.onClick()
@@ -34,13 +38,13 @@ class CompassTileService : TileService(), SensorEventListener {
                 aSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
                 mSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
             }
-            sensorManager.registerListener(this,aSensor,SensorManager.SENSOR_DELAY_NORMAL)
-            sensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager.registerListener(this,aSensor,SensorManager.SENSOR_DELAY_UI)
+            sensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_UI)
         }
         else {
             qsTile.state =  Tile.STATE_INACTIVE
             qsTile.label = this.getString(R.string.compass)
-            sensorManager.unregisterListener(this)
+            if (this::sensorManager.isInitialized) sensorManager.unregisterListener(this)
         }
         qsTile.updateTile()
     }
@@ -53,7 +57,12 @@ class CompassTileService : TileService(), SensorEventListener {
         SensorManager.getOrientation(R1,values)
         //Log.d("calculate:",values.joinToString())
         //Log.d("calculate:",R.joinToString())
-        var degree : Int = Math.toDegrees(values[0].toDouble()).toInt()
+        if (values[0]==radianFloat) return
+        radianFloat = values[0]
+        degreeFloat  = Math.toDegrees(values[0].toDouble()).toFloat()
+        var degree : Int = degreeFloat.toInt()
+        if (degree==lastDegree) return
+        lastDegree = degree
         if (degree<0) degree += 360
         val s : String = when(degree) {
             in 355..360, in 0..5 -> getString(R.string.N)
@@ -71,7 +80,7 @@ class CompassTileService : TileService(), SensorEventListener {
         val bitmap = BitmapFactory.decodeResource(this.resources,R.drawable.navigation)
         val bmResult = Bitmap.createBitmap(bitmap.width,bitmap.height,Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmResult)
-        canvas.rotate(degree.toFloat(),(bitmap.width/2.0).toFloat(),(bitmap.height/2.0).toFloat())
+        canvas.rotate(360F-degreeFloat,(bitmap.width/2.0).toFloat(),(bitmap.height/2.0).toFloat())
         canvas.drawBitmap(bitmap,0.0.toFloat(),0.0.toFloat(),null)
         qsTile.icon = Icon.createWithBitmap(bmResult)
 
@@ -106,7 +115,7 @@ class CompassTileService : TileService(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        sensorManager.unregisterListener(this)
+        if (this::sensorManager.isInitialized) sensorManager.unregisterListener(this)
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -115,12 +124,17 @@ class CompassTileService : TileService(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent?) {
         if (event!=null&&event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
             magneticFieldValues = event.values
+            lastSensorValue[0] = true
             //Log.d("sensorUpdate:MAGNETIC",magneticFieldValues.joinToString())
         }
         if (event!=null&&event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
             accelerometerValues = event.values
+            lastSensorValue[1] = true
             //Log.d("sensorUpdate:ACCELEROMETER",accelerometerValues.joinToString())
         }
+        if (! (lastSensorValue[0] && lastSensorValue[1])) return
+        lastSensorValue[0] = false
+        lastSensorValue[1] = false
         calculateOrientation()
     }
 
