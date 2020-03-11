@@ -10,7 +10,7 @@
     <string name="WN">Northwest</string>
     <string name="WS">Southwest</string>
     <string name="compass" tools:ignore="MissingTranslation">Compass</string>
-    <string name="message" tools:ignore="MissingTranslation">A compass in Quick Setting and a little tribute to CyanogenMod with this tiny function copy.\nhttps://github.com/singleNeuron\n\nThanks HEART &amp; Lagrio for drawing the icon, HEART &amp; Gospodaru dragged me to play PUGA halfway through my developing.\n\nsingleNeuron Copyright © 2020 GNU Lesser General Public License v3.0</string>
+    <string name="message" tools:ignore="MissingTranslation">A compass in Quick Setting and a little tribute to CyanogenMod with this tiny function copy.\nhttps://github.com/singleNeuron\n\nThanks HEART &amp; Lagrio for drawing the icon, HEART &amp; Gospodaru dragged me to play PUGA halfway through my developing.\n\nQQ Group: 951343825\nTelegram: https://t.me/NeuronDevelopChannel\n\nsingleNeuron Copyright © 2020 GNU Lesser General Public License v3.0</string>
     <string name="ok" tools:ignore="MissingTranslation">OK</string>
     <string name="running" translatable="false">TileCompass is running in the foreground</string>
 </resources>
