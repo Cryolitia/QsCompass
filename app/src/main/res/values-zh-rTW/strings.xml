@@ -11,4 +11,5 @@
     <string name="ES">東南</string>
     <string name="WS">西南</string>
     <string name="message">一個存在於下拉通知欄磁貼裡的指南針，並謹以此微小功能的復刻致敬CyanogenMod。\nPS：雖說是指南針但其實箭頭的指向是北\nhttps://github.com/singleNeuron\n\n感謝賣動與HEART繪製圖示，HEART和Gospodaru在我寫到一半的時候拽著我去吃雞。\n\n神經元 Copyright © 2020 GNU Lesser General Public License v3.0</string>
+    <string name="running">磁貼指南針 正在前台運行</string>
 </resources>

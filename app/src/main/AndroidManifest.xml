@@ -10,32 +10,41 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoDisplay"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-
+        <service
+            android:name=".BackgroundService"
+            android:enabled="true"
+            android:exported="true" />
         <service
             android:name=".CompassTileService"
+            android:enabled="true"
+            android:exported="true"
             android:icon="@drawable/navigation"
             android:label="@string/compass"
-            android:enabled="true"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            android:exported="true">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES"/>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
         </activity>
-        <activity android:name=".BackgroundActivity"
-            android:excludeFromRecents="true">
-        </activity>
     </application>
+
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.compass"
+        android:required="true" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 </manifest>

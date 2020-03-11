@@ -1,18 +1,26 @@
 package me.singleneuron.qscompass
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.Icon
 import android.hardware.*
+import android.os.Build
+import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 
-class CompassTileService : TileService(), SensorEventListener {
+class CompassTileService : TileService(), SensorEventListener, ServiceConnection {
 
     private lateinit var sensorManager : SensorManager
     private lateinit var aSensor : Sensor
@@ -23,16 +31,24 @@ class CompassTileService : TileService(), SensorEventListener {
     private var radianFloat : Float = 0F
     private var degreeFloat : Float = 0F
     private var lastDegree : Int = 0
+    private var isBackgroundServiceConnected = false
+    private lateinit var mService: BackgroundService
 
     override fun onClick() {
         super.onClick()
         Log.d("statue","OnClick")
+        if (!isBackgroundServiceConnected) {
+            qsTile.state = Tile.STATE_UNAVAILABLE
+            qsTile.updateTile()
+            return
+        } else {
+            if (qsTile.state == Tile.STATE_UNAVAILABLE) {
+                qsTile.state = Tile.STATE_INACTIVE
+                qsTile.updateTile()
+            }
+        }
         if (qsTile.state!=Tile.STATE_ACTIVE) {
             qsTile.state = Tile.STATE_ACTIVE
-            val intent = Intent(this,BackgroundActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            startActivity(intent)
             if (!this::sensorManager.isInitialized) {
                 sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
                 aSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -50,6 +66,7 @@ class CompassTileService : TileService(), SensorEventListener {
     }
 
     private fun calculateOrientation() {
+        Log.d("statue","calculateOrientation")
         if (qsTile==null||qsTile.state!=Tile.STATE_ACTIVE) return
         val values = FloatArray(3)
         val R1 = FloatArray(9)
@@ -90,6 +107,27 @@ class CompassTileService : TileService(), SensorEventListener {
     override fun onStartListening() {
         super.onStartListening()
         Log.d("statue","OnStartListening")
+
+        val notification : Notification =
+            NotificationCompat.Builder(this,"channelID")
+                .setContentTitle(getText(R.string.app_name))
+                .setContentText(getText(R.string.running))
+                .setTicker(getText(R.string.running))
+                .setSmallIcon(R.drawable.navigation)
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setVibrate(LongArray(0))
+                .setSound(null)
+                .build()
+
+        startForeground(1,notification)
+        Intent(this, BackgroundService::class.java).also {
+                intent ->  startService(intent)
+        }
+        Intent(this, BackgroundService::class.java).also {
+                intent ->  bindService(intent,this,Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT)
+        }
+
         //qsTile.state = Tile.STATE_INACTIVE
         //qsTile.updateTile()
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -108,18 +146,35 @@ class CompassTileService : TileService(), SensorEventListener {
         val canvas = Canvas(bmResult)
         canvas.drawBitmap(bitmap,0.0.toFloat(),0.0.toFloat(),null)
         qsTile.icon = Icon.createWithBitmap(bmResult)
-
         qsTile.updateTile()
-        //sensorManager.unregisterListener(myListener)
+        sensorManager.unregisterListener(this)
+        stopForeground(true)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel("channelID", "通知", NotificationManager.IMPORTANCE_DEFAULT)
+            notificationChannel.apply {
+                enableLights(false)
+                enableVibration(false)
+                vibrationPattern = longArrayOf(0)
+                setSound(null,null)
+            }
+            val notificationManager : NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (this::sensorManager.isInitialized) sensorManager.unregisterListener(this)
+        unbindService(this)
+        if (isBackgroundServiceConnected) mService.stopBackgroundService()
+        stopForeground(true)
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-    }
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event!=null&&event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
@@ -136,6 +191,18 @@ class CompassTileService : TileService(), SensorEventListener {
         lastSensorValue[0] = false
         lastSensorValue[1] = false
         calculateOrientation()
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        Log.d("statue","OnServiceDisconnected")
+        isBackgroundServiceConnected = false
+    }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        Log.d("statue","OnServiceConnected")
+        val binder = service as BackgroundService.LocalBinder
+        mService = binder.getService()
+        isBackgroundServiceConnected = true
     }
 
 }
