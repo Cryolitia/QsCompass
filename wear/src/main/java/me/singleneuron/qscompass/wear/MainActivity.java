@@ -69,12 +69,39 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     @Override
     protected void onResume() {
         super.onResume();
-        if (hasFeature) {
+        /*if (hasFeature) {
             sensorManager.registerListener(this, aSensor, BuildConfig.DEBUG ? SensorManager.SENSOR_DELAY_NORMAL : SensorManager.SENSOR_DELAY_UI);
             sensorManager.registerListener(this, mSensor, BuildConfig.DEBUG ? SensorManager.SENSOR_DELAY_NORMAL : SensorManager.SENSOR_DELAY_UI);
         } else {
             ((TextView) findViewById(R.id.textView)).setText("Hardware not support");
-        }
+        }*/
+
+        /*{
+            int degree = 90;
+            degreeFloat = 90;
+            if (degree < 0) degree += 360;
+            String s = "";
+            if ((degree >= 355 && degree < 360) || (degree >= 0 && degree < 5))
+                s = getString(R.string.N);
+            else if (degree >= 5 && degree < 85) s = getString(R.string.EN);
+            else if (degree >= 85 && degree < 95) s = getString(R.string.E);
+            else if (degree >= 95 && degree < 175) s = getString(R.string.ES);
+            else if (degree >= 175 && degree < 185) s = getString(R.string.S);
+            else if (degree >= 185 && degree < 265) s = getString(R.string.WS);
+            else if (degree >= 265 && degree < 275) s = getString(R.string.W);
+            else if (degree >= 275 && degree < 355) s = getString(R.string.WN);
+
+            ((TextView) findViewById(R.id.textView)).setText(s + " " + degree + "°");
+
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.navigation);
+            Bitmap bmResult = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bmResult);
+            canvas.rotate(360F - degreeFloat, (float) (bitmap.getWidth() / 2.0), (float) (bitmap.getHeight() / 2.0));
+            canvas.drawBitmap(bitmap, 0f, 0f, null);
+
+            ((ImageView) findViewById(R.id.imageView)).setImageBitmap(bmResult);
+        }*/
+
     }
 
     @Override
@@ -136,7 +163,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         canvas.rotate(360F - degreeFloat, (float) (bitmap.getWidth() / 2.0), (float) (bitmap.getHeight() / 2.0));
         canvas.drawBitmap(bitmap, 0f, 0f, null);
 
-        ((ImageView) findViewById(R.id.imageView)).setImageBitmap(bitmap);
+        ((ImageView) findViewById(R.id.imageView)).setImageBitmap(bmResult);
 
     }
 
