@@ -69,12 +69,12 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     @Override
     protected void onResume() {
         super.onResume();
-        /*if (hasFeature) {
+        if (hasFeature) {
             sensorManager.registerListener(this, aSensor, BuildConfig.DEBUG ? SensorManager.SENSOR_DELAY_NORMAL : SensorManager.SENSOR_DELAY_UI);
             sensorManager.registerListener(this, mSensor, BuildConfig.DEBUG ? SensorManager.SENSOR_DELAY_NORMAL : SensorManager.SENSOR_DELAY_UI);
         } else {
             ((TextView) findViewById(R.id.textView)).setText("Hardware not support");
-        }*/
+        }
 
         /*{
             int degree = 90;

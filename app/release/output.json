@@ -6,7 +6,7 @@
     "apkData": {
       "type": "MAIN",
       "splits": [],
-      "versionCode": 10,
+      "versionCode": 11,
       "versionName": "0.5-う",
       "enabled": true,
       "outputFile": "wear-release.apk",
