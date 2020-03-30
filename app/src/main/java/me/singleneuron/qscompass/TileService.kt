@@ -11,13 +11,15 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.Icon
-import android.hardware.*
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Build
 import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 
 class CompassTileService : TileService(), SensorEventListener, ServiceConnection {
@@ -167,11 +169,14 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        if (this::sensorManager.isInitialized) sensorManager.unregisterListener(this)
-        unbindService(this)
-        if (isBackgroundServiceConnected) mService.stopBackgroundService()
-        stopForeground(true)
+        try {
+            super.onDestroy()
+            if (this::sensorManager.isInitialized) sensorManager.unregisterListener(this)
+            unbindService(this)
+            if (isBackgroundServiceConnected) mService.stopBackgroundService()
+            stopForeground(true)
+        } catch (e: Exception) {
+        }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
