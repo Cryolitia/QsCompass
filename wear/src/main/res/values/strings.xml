@@ -9,4 +9,6 @@
     <string name="W">West</string>
     <string name="WN">Northwest</string>
     <string name="WS">Southwest</string>
+    <string name="notSupport">Hardware not support</string>
+    <string name="ambientMode">Ambient mode is on, refresh is paused</string>
 </resources>

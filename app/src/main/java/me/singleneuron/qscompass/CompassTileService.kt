@@ -1,6 +1,5 @@
 package me.singleneuron.qscompass
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentName
@@ -20,7 +19,7 @@ import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
-import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 
 class CompassTileService : TileService(), SensorEventListener, ServiceConnection {
 
@@ -109,27 +108,9 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
     override fun onStartListening() {
         super.onStartListening()
         Log.d("statue","OnStartListening")
-
-        val notification : Notification =
-            NotificationCompat.Builder(this,"channelID")
-                .setContentTitle(getText(R.string.app_name))
-                .setContentText(getText(R.string.running))
-                .setTicker(getText(R.string.running))
-                .setSmallIcon(R.drawable.navigation)
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setVibrate(LongArray(0))
-                .setSound(null)
-                .build()
-
-        startForeground(1,notification)
-        Intent(this, BackgroundService::class.java).also {
-                intent ->  startService(intent)
-        }
-        Intent(this, BackgroundService::class.java).also {
-                intent ->  bindService(intent,this,Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT)
-        }
-
+        val intent = Intent(this, BackgroundService::class.java)
+        ContextCompat.startForegroundService(this, intent)
+        bindService(intent, this, Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT)
         //qsTile.state = Tile.STATE_INACTIVE
         //qsTile.updateTile()
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -142,7 +123,6 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
         Log.d("statue","OnStopListening")
         qsTile.state = Tile.STATE_INACTIVE
         qsTile.label = getString(R.string.compass)
-
         val bitmap = BitmapFactory.decodeResource(this.resources,R.drawable.navigation)
         val bmResult = Bitmap.createBitmap(bitmap.width,bitmap.height,Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmResult)
@@ -150,7 +130,7 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
         qsTile.icon = Icon.createWithBitmap(bmResult)
         qsTile.updateTile()
         sensorManager.unregisterListener(this)
-        stopForeground(true)
+        mService.stopListening()
     }
 
     override fun onCreate() {
@@ -174,7 +154,6 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
             if (this::sensorManager.isInitialized) sensorManager.unregisterListener(this)
             unbindService(this)
             if (isBackgroundServiceConnected) mService.stopBackgroundService()
-            stopForeground(true)
         } catch (e: Exception) {
         }
     }

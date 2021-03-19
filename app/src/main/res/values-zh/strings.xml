@@ -1,15 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">磁贴指南针</string>
-    <string name="compass">指南针</string>
-    <string name="ok">确定</string>
+    <string name="app_name">磁貼指南針</string>
+    <string name="compass">指南針</string>
+    <string name="ok">確定</string>
     <string name="N">北</string>
-    <string name="E">东</string>
+    <string name="E">東</string>
     <string name="S">南</string>
     <string name="W">西</string>
-    <string name="EN">东北</string>
+    <string name="EN">東北</string>
     <string name="WN">西北</string>
-    <string name="ES">东南</string>
+    <string name="ES">東南</string>
     <string name="WS">西南</string>
-    <string name="message">一个存在于下拉通知栏磁贴里的指南针，并谨以此微小功能的复刻致敬CyanogenMod。\nPS：虽说是指南针但其实箭头的指向是北\nhttps://github.com/singleNeuron\n\n感谢卖动与HEART绘制图标，HEART和Gospodaru在我写到一半的时候拽着我去吃鸡。\n\nQQ群: 951343825\nTelegram: https://t.me/NeuronDevelopChannel\n\n神经元 Copyright © 2020 GNU Lesser General Public License v3.0</string>
-    <string name="running">磁贴指南针 正在前台运行</string>
+    <string name="message">一個存在於下拉通知欄磁貼裡的指南針，並謹以此微小功能的復刻致敬CyanogenMod。\nPS：雖說是指南針但其實箭頭的指向是北\nhttps://github.com/singleNeuron\n\n感謝賣動與HEART繪製圖示，HEART和Gospodaru在我寫到一半的時候拽著我去吃雞。\n\nQQ群組: 951343825\nTelegram: https://t.me/NeuronDevelopChannel\n\n神經元 Copyright © 2020 GNU Lesser General Public License v3.0</string>
+    <string name="running">磁貼指南針 正在前台運行</string>
 </resources>

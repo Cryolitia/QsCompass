@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">指南针</string>
+    <string name="N">北</string>
+    <string name="E">东</string>
+    <string name="S">南</string>
+    <string name="W">西</string>
+    <string name="EN">东北</string>
+    <string name="WN">西北</string>
+    <string name="ES">东南</string>
+    <string name="WS">西南</string>
+    <string name="ambientMode">微光模式已开启，刷新已暂停</string>
+    <string name="notSupport">不支持的硬件</string>
+</resources>
