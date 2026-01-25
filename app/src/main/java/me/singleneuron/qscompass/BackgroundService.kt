@@ -32,16 +32,16 @@ class BackgroundService : Service() {
     }
 
     fun stopBackgroundService() {
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
     fun stopListening() {
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
     override fun onDestroy() {
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
         super.onDestroy()
     }
 

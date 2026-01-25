@@ -3,10 +3,8 @@ package me.singleneuron.qscompass
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.Icon
@@ -20,12 +18,13 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.createBitmap
 
 class CompassTileService : TileService(), SensorEventListener, ServiceConnection {
 
     private lateinit var sensorManager : SensorManager
-    private lateinit var aSensor : Sensor
-    private lateinit var mSensor : Sensor
+    private var aSensor : Sensor? = null
+    private var mSensor : Sensor? = null
     private var accelerometerValues = FloatArray(3)
     private var magneticFieldValues = FloatArray(3)
     private var lastSensorValue : BooleanArray = BooleanArray(2)
@@ -51,7 +50,7 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
         if (qsTile.state!=Tile.STATE_ACTIVE) {
             qsTile.state = Tile.STATE_ACTIVE
             if (!this::sensorManager.isInitialized) {
-                sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+                sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
                 aSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
                 mSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
             }
@@ -96,7 +95,7 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
         qsTile.label = "$s $degree°"
 
         val bitmap = BitmapFactory.decodeResource(this.resources,R.drawable.navigation)
-        val bmResult = Bitmap.createBitmap(bitmap.width,bitmap.height,Bitmap.Config.ARGB_8888)
+        val bmResult = createBitmap(bitmap.width, bitmap.height)
         val canvas = Canvas(bmResult)
         canvas.rotate(360F-degreeFloat,(bitmap.width/2.0).toFloat(),(bitmap.height/2.0).toFloat())
         canvas.drawBitmap(bitmap,0.0.toFloat(),0.0.toFloat(),null)
@@ -110,10 +109,10 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
         Log.d("statue","OnStartListening")
         val intent = Intent(this, BackgroundService::class.java)
         ContextCompat.startForegroundService(this, intent)
-        bindService(intent, this, Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT)
+        bindService(intent, this, BIND_AUTO_CREATE or BIND_IMPORTANT)
         //qsTile.state = Tile.STATE_INACTIVE
         //qsTile.updateTile()
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         aSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         mSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
     }
@@ -124,7 +123,7 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
         qsTile.state = Tile.STATE_INACTIVE
         qsTile.label = getString(R.string.compass)
         val bitmap = BitmapFactory.decodeResource(this.resources,R.drawable.navigation)
-        val bmResult = Bitmap.createBitmap(bitmap.width,bitmap.height,Bitmap.Config.ARGB_8888)
+        val bmResult = createBitmap(bitmap.width, bitmap.height)
         val canvas = Canvas(bmResult)
         canvas.drawBitmap(bitmap,0.0.toFloat(),0.0.toFloat(),null)
         qsTile.icon = Icon.createWithBitmap(bmResult)
@@ -143,7 +142,7 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
                 vibrationPattern = longArrayOf(0)
                 setSound(null,null)
             }
-            val notificationManager : NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager : NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
         }
     }
@@ -154,7 +153,7 @@ class CompassTileService : TileService(), SensorEventListener, ServiceConnection
             if (this::sensorManager.isInitialized) sensorManager.unregisterListener(this)
             unbindService(this)
             if (isBackgroundServiceConnected) mService.stopBackgroundService()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
     }
 

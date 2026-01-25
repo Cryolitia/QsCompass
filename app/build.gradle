@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 36
+    namespace "me.singleneuron.qscompass"
     defaultConfig {
-        applicationId "me.singleneuron.qscompass"
+        applicationId "io.github.cryolitia.qscompass"
         minSdkVersion 24
-        targetSdkVersion 30
+        // https://issuetracker.google.com/issues/299506164
+        targetSdkVersion 33
         versionCode (getTimeStamp.call() as int)
-        versionName "0.6-あ"
+        versionName "0.7.0"
     }
     buildTypes {
         release {
@@ -22,9 +22,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'com.google.android.material:material:1.4.0-alpha01'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'com.google.android.material:material:1.13.0'
 }
